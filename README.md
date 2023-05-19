@@ -39,7 +39,7 @@ code:
     object_settings.padding_left = 4;
    
     object_settings.beam = IMG_LoadTexture(render,"beam_texture.png");                   //beam texture;
-    object_settings.main_font = this->global_variables->main_ttf;                        //font;
+    object_settings.main_font = TTF_OpenFont("aria.ttf",13);                             //font;
     object_settings.rect_beam = (SDL_Rect){17,39,1,15};                                  //rect of the beam texture;
     object_settings.render = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);   //render where u want to paste texture of beam and text texture;
    
