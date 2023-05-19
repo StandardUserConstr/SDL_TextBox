@@ -1,1 +1,0 @@
-g++ main.cpp -LC:\MinGW2\x86_64-w64-mingw32\lib32 -IC:\MinGW2\x86_64-w64-mingw32\include -lmingw32 -lSDL2_ttf -lSDL2_image -lSDL2main -lSDL2 -m32 -static-libstdc++ -static-libgcc -D TEXBOX_DEBUG -o program
