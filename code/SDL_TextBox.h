@@ -126,12 +126,19 @@ class TextBoxClass
         }
 
         //--DANGEROUS--
-        //text_data_in_out - main data container where all the text is keeped;
-        //after passing this variable to the function once, you cannot change size of the text inside;
-        //(you cannot change position of the "end of string" char: '\0');
         //event - variable filled with actual events; typically you will re-pass this variable after
         //passing it first through the SDL_PollEvent function;
         //this container must have greater size than passed value to constructor "max_chars" 'cause needed is extra space for char '\0'
+        //
+        //text_data_in_out - main data container where all the text is keeped;
+        //after passing this variable to the function once, you cannot change size of the text inside;
+        //(you cannot change position of the "end of string" char: '\0');
+        //
+        //variables - stays for filled structure with variables
+        //
+        //do_display_textures - set 0 if u want to not display text texture and beam texture; otherwise set 1;
+        //this variable helps in situation when u have transparent textures and u have to run this function more than
+        //once at one frame;
         //
         //text_data_in_out must have '\0' at the end of string; otherwise it will crash;
         //returns 0 if cursor should stay "arrow";
@@ -159,12 +166,19 @@ void TextBoxClass::combine_surfaces(uint32_t x,uint32_t y,SDL_Surface* src,SDL_S
 }
 
 //--DANGEROUS--
-//text_data_in_out - main data container where all the text is keeped;
-//after passing this variable to the function once, you cannot change size of the text inside;
-//(you cannot change position of the "end of string" char: '\0');
 //event - variable filled with actual events; typically you will re-pass this variable after
 //passing it first through the SDL_PollEvent function;
 //this container must have greater size than passed value to constructor "max_chars" 'cause needed is extra space for char '\0'
+//
+//text_data_in_out - main data container where all the text is keeped;
+//after passing this variable to the function once, you cannot change size of the text inside;
+//(you cannot change position of the "end of string" char: '\0');
+//
+//variables - stays for filled structure with variables
+//
+//do_display_textures - set 0 if u want to not display text texture and beam texture; otherwise set 1;
+//this variable helps in situation when u have transparent textures and u have to run this function more than
+//once at one frame;
 //
 //text_data_in_out must have '\0' at the end of string; otherwise it will crash;
 //returns 0 if cursor should stay "arrow";
