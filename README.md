@@ -2,12 +2,12 @@
 
 ![printscreen](https://github.com/StandardUserConstr/SDL_TextBox/assets/127525288/3466142b-0cad-4465-919b-75f1e108f296)
 
-documentation of function TextBoxClass::TextBox() is in header SDL_TextBox.h;
+documentation of function TextBoxClass::TextBox() and other functions are in header SDL_TextBox.h;
 
 1. include header SDL_TextBox.h (it is also required to include the SDL.h and SDL_TTF.h libraries before using SDL_TextBox.h);
 2. Create object of the class TextBoxClass and in constructor put number of maximum chars that you want to have in ur textbox;
 3. allocate data for second argument of function TextBoxClass::TextBox() which is greater minimum by 1 than number you put into
-constructor of class TextBoxClass 'cause of **char '\0' that you MUST add into your allocated data where u want end the string;**
+constructor of class TextBoxClass 'cause of **char '\0' that you MUST add into your allocated data where u want ends the string;**
 4. Create structure TextBoxClass::TextBoxStructure_settings and fill it with data (detailed description of this operation is below);
 5. Fill variable of SDL_Event with actual events using for example SDL_PollEvent() and pass this variable to the function TextBoxClass::TextBox();
 
@@ -22,7 +22,7 @@ code:
     
     //3
     uint8_t* data = (uint8_t*)malloc(max_chars_in_textbox+1);
-    data[0] = '\0'; **//IMPORTANT**
+    data[0] = '\0'; //**IMPORTANT**
 
     //4
     TextBoxClass::TextBoxStructure_settings object_settings;
