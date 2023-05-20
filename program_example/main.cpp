@@ -68,7 +68,6 @@ int main(int argc, char *argv[])
 
     textbox_object0_settings.dynamically_changing_struct = 1;  //variables in struct can be changed dynamically in running program (except rect_beam.x);
 
-
     int counter = 0;
     while(close_program==0)
     {
@@ -97,8 +96,7 @@ int main(int argc, char *argv[])
             int display_textures_once_per_loop = 1;
             do
             {
-                if(textbox_object0.TextBox(&event,(uint8_t*)textbox_object0_data,&textbox_object0_settings,display_textures_once_per_loop)!=0) SDL_SetCursor(global_variables.beam_cursor);
-                else SDL_SetCursor(global_variables.arrow_cursor);
+                textbox_object0.TextBox(&event,(uint8_t*)textbox_object0_data,&textbox_object0_settings,display_textures_once_per_loop);
 
                 switch(event.type)
                 {
@@ -113,6 +111,8 @@ int main(int argc, char *argv[])
 
             }while(SDL_PollEvent(&event));
         }
+        if(textbox_object0.should_cursor_be_arrow_or_beam()==1) SDL_SetCursor(global_variables.beam_cursor);
+        else SDL_SetCursor(global_variables.arrow_cursor);
 
     //display render and freeze program for (1000/30)ms
         SDL_RenderPresent(global_variables.render);

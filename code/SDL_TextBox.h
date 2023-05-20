@@ -37,7 +37,7 @@ class TextBoxClass
         uint8_t first_enter = 1;
         uint8_t focus = 0;
         uint8_t mouse_state = 0;
-        int32_t return_value = 0;
+        uint8_t cursor_display = 0;
 
         SDL_Surface* main_surface = NULL;
         SDL_Texture* main_texture = NULL;
@@ -141,12 +141,10 @@ class TextBoxClass
         //once at one frame;
         //
         //text_data_in_out must have '\0' at the end of string; otherwise it will crash;
-        //returns 0 if cursor should stay "arrow";
-        //otherwise returns 1 if cursor should be "beam";
         //changing rect_beam.x dynamically causing bugs and should not be changed even with dynamically_changing_struct==1;
         //variable "dynamically_changing_struct" is the only variable that can be changed dynamically even if
         //"dynamically_changing_struct" at first was passed as "false" variable;
-        int32_t TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStructure_settings* variables,bool do_display_textures);
+        void TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStructure_settings* variables,bool do_display_textures);
 
         //if returns 1 then data in textbox should be safed to file (help tool)
         //else returns 0
@@ -181,6 +179,11 @@ class TextBoxClass
         //variable will be updated with each run of function TextBox();
         bool should_beam_be_showed_or_not();
 
+        //returns 0 if cursor should stay "arrow";
+        //otherwise returns 1 if cursor should be "beam";
+        //variable will be updated with each run of function TextBox();
+        bool should_cursor_be_arrow_or_beam();
+
 };
 
 //tool
@@ -210,12 +213,10 @@ void TextBoxClass::combine_surfaces(uint32_t x,uint32_t y,SDL_Surface* src,SDL_S
 //once at one frame;
 //
 //text_data_in_out must have '\0' at the end of string; otherwise it will crash;
-//returns 0 if cursor should stay "arrow";
-//otherwise returns 1 if cursor should be "beam";
 //changing rect_beam.x dynamically causing bugs and should not be changed even with dynamically_changing_struct==1;
 //variable "dynamically_changing_struct" is the only variable that can be changed dynamically even if
 //"dynamically_changing_struct" at first was passed as "false" variable;
-int32_t TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStructure_settings* variables,bool do_display_textures)
+void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStructure_settings* variables,bool do_display_textures)
 {
     static const uint8_t MOUSE_BUTTON_HOLD = 2;
     static const uint8_t MOUSE_CAPTURED = 1;
@@ -500,12 +501,12 @@ int32_t TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBox
             if((event->motion.x>=this->x && event->motion.x<=this->x+this->w) && (event->motion.y>=this->y && event->motion.y<=this->y+this->h))
             {
                 if(this->mouse_state!=MOUSE_BUTTON_HOLD) this->mouse_state = MOUSE_CAPTURED;
-                this->return_value = 1;
+                this->cursor_display = 1;
             }
             else
             {
                 if(this->mouse_state!=MOUSE_BUTTON_HOLD) this->mouse_state = MOUSE_NONE;
-                this->return_value = 0;
+                this->cursor_display = 0;
             }
 
             if(this->mouse_state==MOUSE_BUTTON_HOLD)
@@ -845,7 +846,7 @@ int32_t TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBox
                     this->beam_timer0 = SDL_GetTicks();
                     this->beam_timer1 = this->beam_timer0;
                     this->beam_animation_direction = 0;
-                    this->return_value = 1;
+                    this->cursor_display = 1;
 
                     int w_beam,h_beam;
                     uint32_t total_lenght = this->base_beam_x+1;
@@ -893,7 +894,7 @@ int32_t TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBox
                 }
                 if(this->mouse_state==MOUSE_BUTTON_HOLD)
                 {
-                    this->return_value = 1;
+                    this->cursor_display = 1;
                     if((this->at_what_position_is_beam==this->double_click_last_beam_position)&&(this->double_click_max_delay_ms>=(SDL_GetTicks()-this->double_click_timer0))&&(this->double_click_enter==1))
                     {
                         this->double_click_enter = 0;
@@ -1106,12 +1107,12 @@ int32_t TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBox
                     if((event->motion.x>=this->x && event->motion.x<=this->x+this->w) && (event->motion.y>=this->y && event->motion.y<=this->y+this->h))
                     {
                         this->mouse_state = MOUSE_CAPTURED;
-                        this->return_value = 1;
+                        this->cursor_display = 1;
                     }
                     else
                     {
                         this->mouse_state = MOUSE_NONE;
-                        this->return_value = 0;
+                        this->cursor_display = 0;
                     }
 
 
@@ -1120,7 +1121,7 @@ int32_t TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBox
                 {
                     this->focus = 0;
                     this->mouse_state = MOUSE_NONE;
-                    this->return_value = 0;
+                    this->cursor_display = 0;
 
 
                     if(this->select_end_position_x!=this->select_start_position_x)
@@ -2663,7 +2664,7 @@ int32_t TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBox
 
     }
     else this->beam_animation_direction = 1;
-    return this->return_value;
+    return;
 }
 
 //if returns 1 then data in textbox should be safed to file (help tool)
@@ -2721,4 +2722,12 @@ bool TextBoxClass::should_beam_be_showed_or_not()
 {
     if(this->beam_animation_direction==0) return 1;
     else return 0;
+}
+
+//returns 0 if cursor should stay "arrow";
+//otherwise returns 1 if cursor should be "beam";
+//variable will be updated with each run of function TextBox();
+bool TextBoxClass::should_cursor_be_arrow_or_beam()
+{
+    return this->cursor_display;
 }
