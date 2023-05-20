@@ -146,7 +146,7 @@ class TextBoxClass
         //"dynamically_changing_struct" at first was passed as "false" variable;
         void TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStructure_settings* variables,bool do_display_textures);
 
-        //if returns 1 then data in textbox should be safed to file (help tool)
+        //if returns 1 then data in textbox should be safed to file/when focus of the textbox has been lost (help tool)
         //else returns 0
         uint8_t do_data_should_be_safed();
 
@@ -221,6 +221,8 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
     static const uint8_t MOUSE_BUTTON_HOLD = 2;
     static const uint8_t MOUSE_CAPTURED = 1;
     static const uint8_t MOUSE_NONE = 0;
+
+    this->do_data_should_be_safed_variable = 0;
 
     if(this->first_enter==1)
     {
@@ -1871,7 +1873,8 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
 
                         }
                         #ifdef TEXBOX_DEBUG
-                        printf("    text_from_clipboard_to_paste=%s\n\n",clipboard_data);
+                        printf("    actual_text=%s\n",text_data_in_out);
+                        printf("    pasted_text_from_clipboard=%s\n\n",clipboard_data);
                         #endif
                         SDL_free(clipboard_data);
                     }
@@ -2667,16 +2670,11 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
     return;
 }
 
-//if returns 1 then data in textbox should be safed to file (help tool)
+//if returns 1 then data in textbox should be safed to file/when focus of the textbox has been lost (help tool)
 //else returns 0
 uint8_t TextBoxClass::do_data_should_be_safed()
 {
-    if(this->do_data_should_be_safed_variable==1)
-    {
-        this->do_data_should_be_safed_variable = 0;
-        return 1;
-    }
-    else return 0;
+    return this->do_data_should_be_safed_variable;
 }
 
 //--DANGEROUS--
