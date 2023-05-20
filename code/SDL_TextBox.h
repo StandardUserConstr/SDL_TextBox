@@ -49,7 +49,7 @@ class TextBoxClass
         uint16_t h;
         uint16_t padding_left;
         uint16_t padding_up;
-        SDL_Texture* beam;
+        SDL_Texture* beam = NULL;
         SDL_Rect rect_beam;
         SDL_Renderer* render;
         TTF_Font* main_font;
@@ -151,6 +151,35 @@ class TextBoxClass
         //if returns 1 then data in textbox should be safed to file (help tool)
         //else returns 0
         uint8_t do_data_should_be_safed();
+
+        //--DANGEROUS--
+        //returns pointer to the texture of text;
+        //this texture shouldn't be freed without refilled 'cause TextBox() frees and allocates memory of this variables;
+        //if u leaves this variables withouat allocated memory then program may eventually crash;
+        //variable will be filled with data after first enter to the function TextBox();
+        //variable will be updated with each run of function TextBox();
+        SDL_Texture* get_text_texture();
+
+        //returns pointer to the rect of text texture;
+        //variable will be filled with data after first enter to the function TextBox();
+        SDL_Rect* get_rect_of_text_texture();
+
+        //returns pointer to the texture of beam;
+        //variable will be filled with data after first enter to the function TextBox();
+        SDL_Texture* get_beam_texture();
+
+        //--DANGEROUS--
+        //returns pointer to the rect of beam texture;
+        //variables in this structure shouldn't be changed, especially .x 'cause it'll 'causing bugs;
+        //if u want change .y .w .h of this rect then u should "turn on" variable dynamically_changing_struct
+        //and then change variable rect_beam;
+        //variable will be filled with data after first enter to the function TextBox();
+        //variable will be updated with each run of function TextBox();
+        SDL_Rect* get_rect_of_beam_texture();
+
+        //returns 1 if beam texture should be showed for animation purpose or returns 0 if not;
+        //variable will be updated with each run of function TextBox();
+        bool should_beam_be_showed_or_not();
 
 };
 
@@ -2598,8 +2627,9 @@ int32_t TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBox
                             this->at_what_position_is_beam--;
                             this->rect_beam.x-=w_beam;
                             #ifdef TEXBOX_DEBUG
-                            printf("    beam_position=%d\n\n",this->at_what_position_is_beam);
+                            printf("    actual_text=%s\n\n",text_data_in_out);
                             #endif
+
                         }
 
                         this->beam_timer0 = SDL_GetTicks();
@@ -2614,7 +2644,11 @@ int32_t TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBox
 
     if(this->focus==1)
     {
-        if(this->beam_delay_in_ms==0&&do_display_textures==1) SDL_RenderCopy(this->render,this->beam,NULL,&this->rect_beam);
+        if(this->beam_delay_in_ms==0&&do_display_textures==1)
+        {
+            this->beam_animation_direction = 0;
+            SDL_RenderCopy(this->render,this->beam,NULL,&this->rect_beam);
+        }
         else
         {
             this->beam_timer1 = SDL_GetTicks();
@@ -2628,6 +2662,7 @@ int32_t TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBox
         }
 
     }
+    else this->beam_animation_direction = 1;
     return this->return_value;
 }
 
@@ -2640,5 +2675,50 @@ uint8_t TextBoxClass::do_data_should_be_safed()
         this->do_data_should_be_safed_variable = 0;
         return 1;
     }
+    else return 0;
+}
+
+//--DANGEROUS--
+//returns pointer to the texture of text;
+//this texture shouldn't be freed without refilled 'cause TextBox() frees and allocates memory of this variables;
+//if u leaves this variables withouat allocated memory then program may eventually crash;
+//variable will be filled with data after first enter to the function TextBox();
+//variable will be updated with each run of function TextBox();
+SDL_Texture* TextBoxClass::get_text_texture()
+{
+    return this->main_texture;
+}
+
+//returns pointer to the rect of text texture;
+//variable will be filled with data after first enter to the function TextBox();
+SDL_Rect* TextBoxClass::get_rect_of_text_texture()
+{
+    return &this->main_texture_rect;
+}
+
+//returns pointer to the texture of beam;
+//variable will be filled with data after first enter to the function TextBox();
+SDL_Texture* TextBoxClass::get_beam_texture()
+{
+    return this->beam;
+}
+
+//--DANGEROUS--
+//returns pointer to the rect of beam texture;
+//variables in this structure shouldn't be changed, especially .x 'cause it'll 'causing bugs;
+//if u want change .y .w .h of this rect then u should "turn on" variable dynamically_changing_struct
+//and then change variable rect_beam;
+//variable will be filled with data after first enter to the function TextBox();
+//variable will be updated with each run of function TextBox();
+SDL_Rect* TextBoxClass::get_rect_of_beam_texture()
+{
+     return &this->rect_beam;
+}
+
+//returns 1 if beam texture should be showed for animation purpose or returns 0 if not;
+//variable will be updated with each run of function TextBox();
+bool TextBoxClass::should_beam_be_showed_or_not()
+{
+    if(this->beam_animation_direction==0) return 1;
     else return 0;
 }
