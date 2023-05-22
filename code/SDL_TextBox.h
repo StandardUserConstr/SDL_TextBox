@@ -148,7 +148,7 @@ class TextBoxClass
 
         //if returns 1 then data in textbox should be safed to file/when focus of the textbox has been lost (help tool)
         //else returns 0
-        uint8_t do_data_should_be_safed();
+        uint8_t do_data_should_be_safed() const;
 
         //--DANGEROUS--
         //returns pointer to the texture of text;
@@ -177,12 +177,12 @@ class TextBoxClass
 
         //returns 1 if beam texture should be showed for animation purpose or returns 0 if not;
         //variable will be updated with each run of function TextBox();
-        bool should_beam_be_showed_or_not();
+        bool should_beam_be_showed_or_not() const;
 
         //returns 0 if cursor should stay "arrow";
         //otherwise returns 1 if cursor should be "beam";
         //variable will be updated with each run of function TextBox();
-        bool should_cursor_be_arrow_or_beam();
+        bool should_cursor_be_arrow_or_beam() const;
 
 };
 
@@ -2672,7 +2672,7 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
 
 //if returns 1 then data in textbox should be safed to file/when focus of the textbox has been lost (help tool)
 //else returns 0
-uint8_t TextBoxClass::do_data_should_be_safed()
+uint8_t TextBoxClass::do_data_should_be_safed() const
 {
     return this->do_data_should_be_safed_variable;
 }
@@ -2716,7 +2716,7 @@ SDL_Rect* TextBoxClass::get_rect_of_beam_texture()
 
 //returns 1 if beam texture should be showed for animation purpose or returns 0 if not;
 //variable will be updated with each run of function TextBox();
-bool TextBoxClass::should_beam_be_showed_or_not()
+bool TextBoxClass::should_beam_be_showed_or_not() const
 {
     if(this->beam_animation_direction==0) return 1;
     else return 0;
@@ -2725,7 +2725,7 @@ bool TextBoxClass::should_beam_be_showed_or_not()
 //returns 0 if cursor should stay "arrow";
 //otherwise returns 1 if cursor should be "beam";
 //variable will be updated with each run of function TextBox();
-bool TextBoxClass::should_cursor_be_arrow_or_beam()
+bool TextBoxClass::should_cursor_be_arrow_or_beam() const
 {
     return this->cursor_display;
 }
