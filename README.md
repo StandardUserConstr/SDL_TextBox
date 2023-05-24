@@ -44,7 +44,8 @@ code:
     object_settings.render = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);   //render where u want to paste texture of beam and text texture;
    
     object_settings.mode = TextBoxClass::MODE_ALL;                                       //choose mode which decide which letter is allowed to be in ur textbox;
-                                                                                         //MODE_LETTERS || MODE_NUMBERS || MODE_ALL || MODE_LETTERS_WITH_SYMBOLS || MODE_NUMBERS_WITH_SYMBOLS;
+                                                                                         //MODE_LETTERS || MODE_NUMBERS || MODE_ALL || MODE_LETTERS_WITH_SYMBOLS
+                                                                                         || MODE_NUMBERS_WITH_SYMBOLS || MODE_SMALL_LETTERS;
 
     object_settings.extra_char_allowed_to_mode = 0;                                      //extra char that is allowed to be in ur textbox that isn't in ur mode;
     
