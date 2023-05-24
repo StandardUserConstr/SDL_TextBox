@@ -76,6 +76,7 @@ class TextBoxClass
         static const uint8_t MODE_ALL = 2;
         static const uint8_t MODE_LETTERS_WITH_SYMBOLS = 3;
         static const uint8_t MODE_NUMBERS_WITH_SYMBOLS = 4;
+        static const uint8_t MODE_SMALL_LETTERS = 5;
 
         static const uint8_t SOLID_FONT_QUALITY_STANDARD = 0;
         static const uint8_t SOLID_FONT_QUALITY_BLENDED = 1;
@@ -543,7 +544,8 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
 
                     if(this->select_start_position_x!=this->how_many_chars_in_buffor)
                     {
-                        for(uint32_t i = this->select_start_position_x; ; i++)
+                        //faster but with bug
+                        /*for(uint32_t i = this->select_start_position_x; ; i++)
                         {
                             const_char_data[0] = text_data_in_out[i];
                             TTF_SizeUTF8(this->main_font,(const char*)const_char_data,&w_beam,&h_beam);
@@ -562,7 +564,30 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                                 this->select_end_position_x = this->how_many_chars_in_buffor;
                                 break;
                             }
+                        }*/
+
+                        uint8_t* data_check_difference = (uint8_t*)malloc(this->how_many_chars_in_buffor+1);
+                        for(uint32_t i = this->select_start_position_x,j = 0; ; i++,j++)
+                        {
+                            data_check_difference[j] = text_data_in_out[i];
+                            data_check_difference[j+1] = '\0';
+                            TTF_SizeUTF8(this->main_font,(const char*)data_check_difference,&w_beam,&h_beam);
+                            if(difference<w_beam)
+                            {
+                                int fast_w_beam,fast_h_beam;
+                                const_char_data[0] = data_check_difference[j];
+                                TTF_SizeUTF8(this->main_font,(const char*)const_char_data,&fast_w_beam,&fast_h_beam);
+                                if(difference<(w_beam-(fast_w_beam/2))) this->select_end_position_x = i;
+                                else this->select_end_position_x = i+1;
+                                break;
+                            }
+                            if(i==this->how_many_chars_in_buffor)
+                            {
+                                this->select_end_position_x = this->how_many_chars_in_buffor;
+                                break;
+                            }
                         }
+                        free(data_check_difference);
 
                         uint8_t* second_part_data = (uint8_t*)malloc(this->select_end_position_x-this->select_start_position_x+1);
                         for(uint32_t i = this->select_start_position_x,k = 0; ; i++,k++)
@@ -706,7 +731,8 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
 
                     if(this->select_start_position_x!=0)
                     {
-                        for(uint32_t i = this->select_start_position_x-1; ; i--)
+                        //faster but with bug
+                        /*for(uint32_t i = this->select_start_position_x-1; ; i--)
                         {
                             const_char_data[0] = text_data_in_out[i];
                             TTF_SizeUTF8(this->main_font,(const char*)const_char_data,&w_beam,&h_beam);
@@ -725,7 +751,30 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                                 this->select_end_position_x = 0;
                                 break;
                             }
+                        }*/
+
+                        uint8_t* data_check_difference = (uint8_t*)malloc(this->how_many_chars_in_buffor+1);
+                        for(uint32_t i = this->select_start_position_x-1,j = 0; ; i--,j++)
+                        {
+                            data_check_difference[j] = text_data_in_out[i];
+                            data_check_difference[j+1] = '\0';
+                            TTF_SizeUTF8(this->main_font,(const char*)data_check_difference,&w_beam,&h_beam);
+                            if(difference<w_beam)
+                            {
+                                int fast_w_beam,fast_h_beam;
+                                const_char_data[0] = data_check_difference[j];
+                                TTF_SizeUTF8(this->main_font,(const char*)const_char_data,&fast_w_beam,&fast_h_beam);
+                                if(difference<(w_beam-(fast_w_beam/2))) this->select_end_position_x = i+1;
+                                else this->select_end_position_x = i;
+                                break;
+                            }
+                            if(i==0)
+                            {
+                                this->select_end_position_x = 0;
+                                break;
+                            }
                         }
+                        free(data_check_difference);
 
                         uint8_t* second_part_data = (uint8_t*)malloc(this->select_start_position_x-this->select_end_position_x+1);
                         for(uint32_t i = this->select_end_position_x,k = 0; ; i++,k++)
@@ -852,7 +901,7 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
 
                     int w_beam,h_beam;
                     uint32_t total_lenght = this->base_beam_x+1;
-                    uint8_t const_char_data[2] = {'\0','\0'};
+                    uint8_t buffor = '\0';
                     for(uint32_t i = 0; ; i++)
                     {
                         if(total_lenght>=event->motion.x)
@@ -867,9 +916,11 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                             this->rect_beam.x = total_lenght;
                             break;
                         }
-                        const_char_data[0] = text_data_in_out[i];
-                        TTF_SizeUTF8(this->main_font,(const char*)const_char_data,&w_beam,&h_beam);
-                        total_lenght+=w_beam;
+                        buffor = text_data_in_out[i+1];
+                        text_data_in_out[i+1] = '\0';
+                        TTF_SizeUTF8(this->main_font,(const char*)text_data_in_out,&w_beam,&h_beam);
+                        text_data_in_out[i+1] = buffor;
+                        total_lenght = this->base_beam_x+w_beam+1;
                     }
                     this->select_base_mouse_x = total_lenght;
                     this->width_of_text_texture = total_lenght-(this->base_beam_x+1);
@@ -1378,6 +1429,19 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                             }
 
                         }break;
+
+                    case MODE_SMALL_LETTERS:
+                        {
+                            if((event->key.keysym.sym>=97&&event->key.keysym.sym<=122)||event->key.keysym.sym==this->extra_char_allowed_to_mode||event->key.keysym.sym==SDLK_SPACE)
+                            {
+                                if(event->key.keysym.sym==SDLK_SPACE&&this->is_space_allowed==0) break;
+                                else char0 = event->key.keysym.sym;
+                                #ifdef TEXBOX_DEBUG
+                                printf("    char=%c\n",char0);
+                                #endif
+                            }
+
+                        }break;
                 }
                 if(key_mode==KMOD_LCTRL||key_mode==KMOD_RCTRL)
                 {
@@ -1663,6 +1727,16 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                                     }
                                 }break;
 
+                                case MODE_SMALL_LETTERS:
+                                {
+                                    if((clipboard_data[clipboard_data_counter]>=97&&clipboard_data[clipboard_data_counter]<=122)
+                                       ||(clipboard_data[clipboard_data_counter]==this->extra_char_allowed_to_mode||clipboard_data[clipboard_data_counter]==SDLK_SPACE))
+                                    {
+                                        if(clipboard_data[clipboard_data_counter]==SDLK_SPACE&&this->is_space_allowed==0) break;
+                                        else is_char_allowed = 1;
+                                    }
+                                }break;
+
                                 default: break;
 
                             }
@@ -1863,13 +1937,20 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                             SDL_DestroyTexture(this->main_texture);
                             this->main_texture = SDL_CreateTextureFromSurface(this->render,this->main_surface);
 
-                            TTF_SizeUTF8(this->main_font,(const char*)clipboard_data,&w_beam,&h_beam);
-                            this->width_of_text_texture+=w_beam;
-                            this->rect_beam.x+=w_beam;
                             this->how_many_chars_in_buffor+=clipboard_data_counter;
                             this->at_what_position_is_beam+=clipboard_data_counter;
                             this->select_start_position_x+=clipboard_data_counter;
                             this->select_end_position_x = this->select_start_position_x;
+
+                            uint8_t last_buffor = '\0';
+                            last_buffor = text_data_in_out[this->select_start_position_x];
+                            text_data_in_out[this->select_start_position_x] = '\0';
+
+                            TTF_SizeUTF8(this->main_font,(const char*)text_data_in_out,&w_beam,&h_beam);
+                            this->rect_beam.x = this->base_beam_x+w_beam+1;
+                            text_data_in_out[this->select_start_position_x] = last_buffor;
+                            TTF_SizeUTF8(this->main_font,(const char*)text_data_in_out,&w_beam,&h_beam);
+                            this->width_of_text_texture = w_beam;
 
                         }
                         #ifdef TEXBOX_DEBUG
@@ -2010,6 +2091,10 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                     }
                     else if(this->how_many_chars_in_buffor!=this->max_chars)
                     {
+                        int old_text_w_beam,old_text_h_beam;
+                        int new_text_w_beam,new_text_h_beam;
+                        TTF_SizeUTF8(this->main_font,(const char*)text_data_in_out,&old_text_w_beam,&old_text_h_beam);
+
                         uint32_t i;
                         for(i = this->how_many_chars_in_buffor+1; i!=this->at_what_position_is_beam; i--) text_data_in_out[i] = text_data_in_out[i-1];
                         text_data_in_out[i] = char0;
@@ -2027,12 +2112,12 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                         this->select_end_position_x++;
                         this->select_start_position_x++;
 
-                        int w_beam,h_beam;
-                        uint8_t const_char_data[2] = {(uint8_t)char0,'\0'};
-                        TTF_SizeUTF8(this->main_font,(const char*)const_char_data,&w_beam,&h_beam);
-                        this->width_of_text_texture+=w_beam;
+                        TTF_SizeUTF8(this->main_font,(const char*)text_data_in_out,&new_text_w_beam,&new_text_h_beam);
+
+                        this->width_of_text_texture+=(new_text_w_beam-old_text_w_beam);
                         this->at_what_position_is_beam++;
-                        this->rect_beam.x+=w_beam;
+                        this->rect_beam.x+=(new_text_w_beam-old_text_w_beam);
+
                         #ifdef TEXBOX_DEBUG
                         printf("    actual_text=%s\n\n",text_data_in_out);
                         #endif
@@ -2594,6 +2679,10 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                         }
                         else if(this->at_what_position_is_beam!=0)
                         {
+                            int old_text_w_beam,old_text_h_beam;
+                            int new_text_w_beam,new_text_h_beam;
+                            TTF_SizeUTF8(this->main_font,(const char*)text_data_in_out,&old_text_w_beam,&old_text_h_beam);
+
                             uint32_t i;
                             uint8_t start_copying = 0;
                             uint8_t buffor = '\0';
@@ -2624,16 +2713,15 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                             this->select_end_position_x--;
                             this->select_start_position_x--;
 
-                            int w_beam,h_beam;
-                            uint8_t const_char_data[2] = {(uint8_t)buffor,'\0'};
-                            TTF_SizeUTF8(this->main_font,(const char*)const_char_data,&w_beam,&h_beam);
-                            this->width_of_text_texture-=w_beam;
+                            TTF_SizeUTF8(this->main_font,(const char*)text_data_in_out,&new_text_w_beam,&new_text_h_beam);
+
+                            this->width_of_text_texture-=(old_text_w_beam-new_text_w_beam);
                             this->at_what_position_is_beam--;
-                            this->rect_beam.x-=w_beam;
+                            this->rect_beam.x-=(old_text_w_beam-new_text_w_beam);
+
                             #ifdef TEXBOX_DEBUG
                             printf("    actual_text=%s\n\n",text_data_in_out);
                             #endif
-
                         }
 
                         this->beam_timer0 = SDL_GetTicks();
