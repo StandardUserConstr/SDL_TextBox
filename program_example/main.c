@@ -4,7 +4,6 @@
 #include <time.h>
 
 #define printf_error(string) fprintf(stderr,string)
-#define printf_error_args(string,args) fprintf(stderr,string,args)
 
 struct Global_Variables
 {
@@ -66,8 +65,6 @@ int main(int argc, char *argv[])
     textbox_object0_settings.beam_delay_in_ms = 500;
     textbox_object0_settings.double_click_max_delay_ms = 500;
 
-    textbox_object0_settings.dynamically_changing_struct = 1;  //variables in struct can be changed dynamically in running program (except rect_beam.x);
-
     int counter = 0;
     while(close_program==0)
     {
@@ -88,31 +85,33 @@ int main(int argc, char *argv[])
         if(counter==6) counter = 1;
         textbox_object0_settings.selected_text_background_color = (SDL_Color){r,g,b,0};
 
+        textbox_object0.update_textbox(); //you have to run function "update_textbox()" after changing something in TextBoxStructure_settings or in your text_data_in_out;
+
     //textbox & event handle
         SDL_Event event;
-        if(SDL_PollEvent(&event)==0) textbox_object0.TextBox(&event,(uint8_t*)textbox_object0_data,&textbox_object0_settings,1);
-        else
+        textbox_object0.TextBox(&event,(uint8_t*)textbox_object0_data,&textbox_object0_settings,false);
+                                //in loop while(SDL_PollEvent() function Textbox can be not executed, and thats why i executing this function for once here
+                                //'cause i want to update content of this function every frame;
+        while(SDL_PollEvent(&event))
         {
-            int display_textures_once_per_loop = 1;
-            do
+
+            switch(event.type)
             {
-                textbox_object0.TextBox(&event,(uint8_t*)textbox_object0_data,&textbox_object0_settings,display_textures_once_per_loop);
+                case SDL_QUIT:
+                    close_program = 1;
+                break;
 
-                switch(event.type)
-                {
-                    case SDL_QUIT:
-                        close_program = 1;
+                default:
                     break;
-
-                    default:
-                        break;
-                }
-                display_textures_once_per_loop = 0;
-
-            }while(SDL_PollEvent(&event));
+            }
+            textbox_object0.TextBox(&event,(uint8_t*)textbox_object0_data,&textbox_object0_settings,false);
         }
+
         if(textbox_object0.should_cursor_be_arrow_or_beam()==1) SDL_SetCursor(global_variables.beam_cursor);
         else SDL_SetCursor(global_variables.arrow_cursor);
+
+        SDL_RenderCopy(global_variables.render,textbox_object0.get_text_texture(),NULL,textbox_object0.get_rect_of_text_texture());
+        SDL_RenderCopy(global_variables.render,textbox_object0.get_beam_texture(),NULL,textbox_object0.get_rect_of_beam_texture());
 
     //display render and freeze program for (1000/30)ms
         SDL_RenderPresent(global_variables.render);
