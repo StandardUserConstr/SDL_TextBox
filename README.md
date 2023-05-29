@@ -45,7 +45,8 @@ code:
    
     object_settings.mode = TextBoxClass::MODE_ALL;                                       //choose mode which decide which letter is allowed to be in ur textbox;
                                                                                          //MODE_LETTERS || MODE_NUMBERS || MODE_ALL || MODE_LETTERS_WITH_SYMBOLS
-                                                                                         || MODE_NUMBERS_WITH_SYMBOLS || MODE_SMALL_LETTERS;
+                                                                                         || MODE_NUMBERS_WITH_SYMBOLS || MODE_SMALL_LETTERS
+                                                                                         ||MODE_SMALL_LETTERS_WITH_NUMBERS;
 
     object_settings.extra_char_allowed_to_mode = 0;                                      //extra char that is allowed to be in ur textbox that isn't in ur mode;
     
@@ -60,7 +61,6 @@ code:
     object_settings.solid_font_quality = TextBoxClass::SOLID_FONT_QUALITY_STANDARD;      //quality mode for render text: SOLID_FONT_QUALITY_STANDARD | SOLID_FONT_QUALITY_BLENDED;
     object_settings.selected_font_quality = TextBoxClass::SELECTED_FONT_QUALITY_LCD;     //quality mode for render selected text: SELECTED_FONT_QUALITY_LCD | SELECTED_FONT_QUALITY_SHADED;
     
-    object_settings.dynamically_changing_struct = 0;                                     //decides do struct changes should change work of function or not (except variable rect_beam.x);
     
     //5
     while(1)
