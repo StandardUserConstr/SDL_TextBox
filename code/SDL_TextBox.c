@@ -322,7 +322,7 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                 this->cursor_display = 0;
             }
 
-            if(this->mouse_state==MOUSE_BUTTON_HOLD)
+            if(this->mouse_state==MOUSE_BUTTON_HOLD&&this->do_double_click_ended==1)
             {
                 if(this->select_base_mouse_x-event->motion.x<0)
                 {
@@ -977,6 +977,7 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                         }
                         SDL_DestroyTexture(this->main_texture);
                         this->main_texture = SDL_CreateTextureFromSurface(this->render,this->main_surface);
+                        this->do_double_click_ended = 0;
 
                     }
                     else
@@ -1003,8 +1004,7 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                         this->mouse_state = MOUSE_NONE;
                         this->cursor_display = 0;
                     }
-
-
+                    this->do_double_click_ended = 1;
                 }
 
             }break;

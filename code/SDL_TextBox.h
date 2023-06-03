@@ -30,6 +30,7 @@ class TextBoxClass
         uint32_t double_click_timer0 = 0;
         uint32_t double_click_last_beam_position = 0;
         uint8_t double_click_enter = 0;
+        bool do_double_click_ended = 1;
 
         uint32_t select_start_position_x = 0;
         uint32_t select_end_position_x = 0;
