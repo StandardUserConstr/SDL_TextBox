@@ -101,7 +101,7 @@ class TextBoxClass
             uint16_t padding_up = 0;
 
             SDL_Texture* beam;
-            SDL_Rect rect_beam;  //changing rect_beam.x dynamically causing bugs and should not be changed even with dynamically_changing_struct==1;
+            SDL_Rect rect_beam;  //changing rect_beam.x dynamically causing bugs and should not be changed;
             SDL_Renderer* render;
             TTF_Font* main_font;
 
@@ -139,8 +139,6 @@ class TextBoxClass
         //this container must have greater size than passed value to constructor "max_chars" 'cause needed is extra space for char '\0'
         //
         //text_data_in_out - main data container where all the text is keeped;
-        //after passing this variable to the function once, you cannot change size of the text inside;
-        //(you cannot change position of the "end of string" char: '\0');
         //
         //variables - stays for filled structure with variables
         //

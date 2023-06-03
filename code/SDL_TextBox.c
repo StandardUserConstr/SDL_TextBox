@@ -700,7 +700,33 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
 
         case SDL_MOUSEBUTTONDOWN:
             {
-                if(this->mouse_state==MOUSE_CAPTURED)
+                if(this->mouse_state==MOUSE_NONE&&this->focus==1)
+                {
+                    this->focus = 0;
+                    this->mouse_state = MOUSE_NONE;
+                    this->cursor_display = 0;
+
+
+                    if(this->select_end_position_x!=this->select_start_position_x)
+                    {
+                        this->select_start_position_x = 0;
+                        this->select_end_position_x = 0;
+                        SDL_FreeSurface(this->main_surface);
+                        this->main_surface = SDL_CreateRGBSurface(0,this->w,this->h,32,0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
+                        SDL_Surface* text0;
+                        if(this->solid_font_quality==TextBoxClass::SOLID_FONT_QUALITY_STANDARD) text0 = TTF_RenderUTF8_Solid(this->main_font,(const char*)text_data_in_out,this->solid_text_color);
+                        else text0 = TTF_RenderUTF8_Blended(this->main_font,(const char*)text_data_in_out,this->solid_text_color);
+                        this->combine_surfaces(0,0,text0,this->main_surface);
+                        SDL_FreeSurface(text0);
+                        SDL_DestroyTexture(this->main_texture);
+                        this->main_texture = SDL_CreateTextureFromSurface(this->render,this->main_surface);
+                        //printf("select has been reseted\n");
+                    }
+
+                    //save settings to file when lossing focus
+                    this->do_data_should_be_safed_variable = 1;
+                }
+                else if(this->mouse_state==MOUSE_CAPTURED)
                 {
                     this->mouse_state = MOUSE_BUTTON_HOLD;
                     this->focus = 1;
@@ -979,32 +1005,6 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                     }
 
 
-                }
-                else if(this->focus==1&&this->mouse_state==MOUSE_NONE)
-                {
-                    this->focus = 0;
-                    this->mouse_state = MOUSE_NONE;
-                    this->cursor_display = 0;
-
-
-                    if(this->select_end_position_x!=this->select_start_position_x)
-                    {
-                        this->select_start_position_x = 0;
-                        this->select_end_position_x = 0;
-                        SDL_FreeSurface(this->main_surface);
-                        this->main_surface = SDL_CreateRGBSurface(0,this->w,this->h,32,0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
-                        SDL_Surface* text0;
-                        if(this->solid_font_quality==TextBoxClass::SOLID_FONT_QUALITY_STANDARD) text0 = TTF_RenderUTF8_Solid(this->main_font,(const char*)text_data_in_out,this->solid_text_color);
-                        else text0 = TTF_RenderUTF8_Blended(this->main_font,(const char*)text_data_in_out,this->solid_text_color);
-                        this->combine_surfaces(0,0,text0,this->main_surface);
-                        SDL_FreeSurface(text0);
-                        SDL_DestroyTexture(this->main_texture);
-                        this->main_texture = SDL_CreateTextureFromSurface(this->render,this->main_surface);
-                        //printf("select has been reseted\n");
-                    }
-
-                    //save settings to file when lossing focus
-                    this->do_data_should_be_safed_variable = 1;
                 }
 
             }break;
