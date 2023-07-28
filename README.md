@@ -4,7 +4,7 @@
 
 documentation of function TextBoxClass::TextBox() and other functions are in header SDL_TextBox.h;
 
-Function "TextBox" only can handle letters between 0 - 255 in ASCII representation; Function that can handle full UTF8 should be created separately and doesn't exist right now;
+Function "TextBox" only can handle letters between 0 - 255 in ASCII representation; Function that can handle full UTF8 or UNICODE should be created separately and doesn't exist right now;
 
 1. include header SDL_TextBox.h (it is also required to include the SDL.h and SDL_TTF.h libraries before using SDL_TextBox.h);
 2. Create object of the class TextBoxClass and in constructor put number of maximum chars that you want to have in ur textbox;
