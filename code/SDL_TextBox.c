@@ -20,7 +20,7 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
     if(this->first_enter==0)
     {
         uint32_t counter_first = 0;
-        for(counter_first; text_data_in_out[counter_first]!='\0'; counter_first++){}
+        for(; text_data_in_out[counter_first]!='\0'; counter_first++){}
         if(counter_first!=this->how_many_chars_in_buffor)
         {
                 this->at_what_position_is_beam = counter_first;
@@ -59,7 +59,7 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
 
         this->first_enter = 0;
         uint32_t i = 0;
-        for(i; text_data_in_out[i]!='\0'; i++){}
+        for(; text_data_in_out[i]!='\0'; i++){}
         this->how_many_chars_in_buffor = i;
         this->at_what_position_is_beam = i;
 
@@ -121,7 +121,7 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
             SDL_Surface* second_part = NULL;
             uint32_t second_part_width = 0;
 
-            uint32_t third_part_width = 0;
+            //uint32_t third_part_width = 0;
             SDL_Surface* third_part = NULL;
 
             if(this->select_end_position_x>this->select_start_position_x)
@@ -142,8 +142,6 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                     free(first_part_data);
                 }
             //second
-                uint8_t const_char_data[2] = {'\0','\0'};
-
                 uint8_t* second_part_data;
                 second_part_data = (uint8_t*)malloc(this->select_end_position_x-this->select_start_position_x+1);
                 for(uint32_t i = this->select_start_position_x,k = 0; ; i++,k++)
@@ -175,8 +173,8 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                         }
                         third_part_data[k] = text_data_in_out[i];
                     }
-                    TTF_SizeUTF8(this->main_font,(const char*)third_part_data,&w_beam,&h_beam);
-                    third_part_width = w_beam;
+                    //TTF_SizeUTF8(this->main_font,(const char*)third_part_data,&w_beam,&h_beam);
+                    //third_part_width = w_beam;
 
                     if(this->solid_font_quality==TextBoxClass::SOLID_FONT_QUALITY_STANDARD) third_part = TTF_RenderUTF8_Solid(this->main_font,(const char*)third_part_data,this->solid_text_color);
                     else third_part = TTF_RenderUTF8_Blended(this->main_font,(const char*)third_part_data,this->solid_text_color);
@@ -201,8 +199,6 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                     free(first_part_data);
                 }
             //second
-                uint8_t const_char_data[2] = {'\0','\0'};
-
                 uint8_t* second_part_data;
                 second_part_data = (uint8_t*)malloc(this->select_start_position_x-this->select_end_position_x+1);
                 for(uint32_t i = this->select_end_position_x,k = 0; ; i++,k++)
@@ -234,8 +230,8 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                         }
                         third_part_data[k] = text_data_in_out[i];
                     }
-                    TTF_SizeUTF8(this->main_font,(const char*)third_part_data,&w_beam,&h_beam);
-                    third_part_width = w_beam;
+                    //TTF_SizeUTF8(this->main_font,(const char*)third_part_data,&w_beam,&h_beam);
+                    //third_part_width = w_beam;
 
                     if(this->solid_font_quality==TextBoxClass::SOLID_FONT_QUALITY_STANDARD) third_part = TTF_RenderUTF8_Solid(this->main_font,(const char*)third_part_data,this->solid_text_color);
                     else third_part = TTF_RenderUTF8_Blended(this->main_font,(const char*)third_part_data,this->solid_text_color);
@@ -327,7 +323,7 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                 if(this->select_base_mouse_x-event->motion.x<0)
                 {
                 //right
-                    uint32_t difference = SDL_abs(this->select_base_mouse_x-event->motion.x);
+                    int32_t difference = SDL_abs(this->select_base_mouse_x-event->motion.x);
                     int w_beam,h_beam;
 
                 //first
@@ -508,10 +504,10 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
 
 
                 }
-                else if(this->select_base_mouse_x-event->motion.x>0&&((event->motion.x<(this->width_of_text_texture+this->main_texture_rect.x))||(this->select_end_position_x!=this->select_start_position_x)))
+                else if(this->select_base_mouse_x-event->motion.x>0&&((event->motion.x<((int32_t)this->width_of_text_texture+this->main_texture_rect.x))||(this->select_end_position_x!=this->select_start_position_x)))
                 {
                 //left
-                    uint32_t difference = this->select_base_mouse_x-event->motion.x;
+                    int32_t difference = this->select_base_mouse_x-event->motion.x;
                     int w_beam,h_beam;
 
                 //third
@@ -740,7 +736,7 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                     uint8_t buffor = '\0';
                     for(uint32_t i = 0; ; i++)
                     {
-                        if(total_lenght>=event->motion.x)
+                        if((int32_t)total_lenght>=event->motion.x)
                         {
                             this->at_what_position_is_beam = i;
                             this->rect_beam.x = total_lenght;
@@ -878,7 +874,6 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
 
                     //second
                         SDL_Surface* second_part = NULL;
-                        uint8_t const_char_data[2] = {'\0','\0'};
                         uint32_t second_part_width = 0;
 
                         uint8_t* second_part_data = (uint8_t*)malloc(this->select_end_position_x-this->select_start_position_x+1);
@@ -905,7 +900,7 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                         free(second_part_data);
 
                     //third && setting beam position
-                        uint32_t third_part_width = 0;
+                        //uint32_t third_part_width = 0;
                         SDL_Surface* third_part = NULL;
                         if(this->select_end_position_x!=this->how_many_chars_in_buffor)
                         {
@@ -919,8 +914,8 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                                 }
                                 third_part_data[k] = text_data_in_out[i];
                             }
-                            TTF_SizeUTF8(this->main_font,(const char*)third_part_data,&w_beam,&h_beam);
-                            third_part_width = w_beam;
+                            //TTF_SizeUTF8(this->main_font,(const char*)third_part_data,&w_beam,&h_beam);
+                            //third_part_width = w_beam;
 
                             this->rect_beam.x = this->base_beam_x+first_part_width+second_part_width+1;
                             if(this->solid_font_quality==TextBoxClass::SOLID_FONT_QUALITY_STANDARD) third_part = TTF_RenderUTF8_Solid(this->main_font,(const char*)third_part_data,this->solid_text_color);
@@ -1484,7 +1479,7 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                         if(clipboard_data[0]=='\0')
                         {
                             #ifdef TEXBOX_DEBUG
-                            printf("    clipboard is empty or function failed\n\n",clipboard_data);
+                            printf("    clipboard is empty or function failed\n\n");
                             #endif
                             SDL_free(clipboard_data);
                             break;
@@ -1607,7 +1602,7 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                             //__!!!__ text
 
                                 uint8_t* buffor = (uint8_t*)malloc((total_chars-this->select_end_position_x)+1);
-                                int32_t i = 0;
+                                uint32_t i = 0;
                                 for(; i!=clipboard_data_counter; i++) buffor[i] = clipboard_data[i];
                                 for(uint32_t j = this->select_start_position_x; text_data_in_out[j]!='\0'; i++,j++)
                                 {
@@ -1679,7 +1674,7 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                             //__!!!__ text
 
                                 uint8_t* buffor = (uint8_t*)malloc((total_chars-this->select_start_position_x)+1);
-                                int32_t i = 0;
+                                uint32_t i = 0;
                                 for(; i!=clipboard_data_counter; i++) buffor[i] = clipboard_data[i];
                                 for(uint32_t j = this->select_end_position_x; text_data_in_out[j]!='\0'; i++,j++)
                                 {
@@ -2165,7 +2160,6 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                                 this->select_end_position_x = this->at_what_position_is_beam;
                                 this->select_start_position_x = this->at_what_position_is_beam;
 
-                                int w_beam,h_beam;
                                 SDL_FreeSurface(this->main_surface);
                                 this->main_surface = SDL_CreateRGBSurface(0,this->w,this->h,32,0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
                                 SDL_Surface* text0;
@@ -2377,7 +2371,6 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
                                 this->select_end_position_x = this->at_what_position_is_beam;
                                 this->select_start_position_x = this->at_what_position_is_beam;
 
-                                int w_beam,h_beam;
                                 SDL_FreeSurface(this->main_surface);
                                 this->main_surface = SDL_CreateRGBSurface(0,this->w,this->h,32,0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
                                 SDL_Surface* text0;
@@ -2517,13 +2510,13 @@ void TextBoxClass::TextBox(SDL_Event* event,uint8_t* text_data_in_out,TextBoxStr
 
                             uint32_t i;
                             uint8_t start_copying = 0;
-                            uint8_t buffor = '\0';
+                            //uint8_t buffor = '\0';
                             for(i = 0; i!=this->how_many_chars_in_buffor; i++)
                             {
                                 if(i==this->at_what_position_is_beam-1)
                                 {
                                     start_copying = 1;
-                                    buffor = text_data_in_out[i];
+                                    //buffor = text_data_in_out[i];
                                     text_data_in_out[i] = text_data_in_out[i+1];
                                 }
                                 else if(start_copying==1)
